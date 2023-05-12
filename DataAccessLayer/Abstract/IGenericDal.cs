@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace DataAccessLayer.Abstract
 {
-    public interface IGenericDal<T> where T:class
+	public interface IGenericDal<T> where T:class
     {
         void Insert(T t);
 
@@ -17,5 +13,7 @@ namespace DataAccessLayer.Abstract
         List<T> GetAll();
 
         T? GetById(int id);
+
+        List<T> GetListAll(Expression<Func<T, bool>> filter);
     }
 }
