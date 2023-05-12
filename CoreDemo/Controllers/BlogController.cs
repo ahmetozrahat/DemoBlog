@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessLayer.Concrete;
+using DataAccessLayer.EntityFramework;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoreDemo.Controllers
 {
     public class BlogController : Controller
     {
+        BlogManager blogManager = new BlogManager(new EfBlogRepository());
+
         public IActionResult Index()
         {
-            return View();
+            var values = blogManager.GetList();
+            return View(values);
         }
     }
 }
