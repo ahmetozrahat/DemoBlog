@@ -1,27 +1,43 @@
 ﻿using BusinessLayer.Concrete;
+using BusinessLayer.ValidationRules;
 using DataAccessLayer.EntityFramework;
 using EntityLayer.Concrete;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreDemo.Controllers
 {
-	public class RegisterController : Controller
-	{
-		WriterManager writerManager = new WriterManager(new EfWriterRepository());
+    public class RegisterController : Controller
+    {
+        WriterManager writerManager = new WriterManager(new EfWriterRepository());
 
-		[HttpGet]
-		public IActionResult Index()
-		{
-			return View();
-		}
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-		[HttpPost]
-		public IActionResult Index(Writer writer)
-		{
-			writer.WriterStatus = true;
-			writer.WriterAbout = "Deneme Test";
-			writerManager.WriterAdd(writer);
-			return RedirectToAction("Index", "Blog");
-		}
-	}
+        [HttpPost]
+        public IActionResult Index(Writer writer)
+        {
+            WriterValidator validationRules = new WriterValidator();
+            ValidationResult result = validationRules.Validate(writer);
+
+            if (result.IsValid)
+            {
+                writer.WriterStatus = true;
+                writer.WriterAbout = "Deneme Test";
+                writerManager.WriterAdd(writer);
+                return RedirectToAction("Index", "Blog");
+            }
+            else
+            {
+                foreach(var item in result.Errors)
+                {
+                    ModelState.AddModelError(item.PropertyName, item.ErrorMessage);
+                }
+            }
+            return View();
+        }
+    }
 }
